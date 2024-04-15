@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tik_tok_clone/config/theme/app_theme.dart';
+import 'package:tik_tok_clone/domain/repositories/video_post_repository.dart';
+import 'package:tik_tok_clone/infrastructure/data_sources/local_video_post_data_source_implementation.dart';
+import 'package:tik_tok_clone/infrastructure/repositories/video_post_repository_implementation.dart';
 import 'package:tik_tok_clone/presentation/providers/discover_provider.dart';
 
 import 'presentation/pages/discover_screen.dart';
@@ -14,6 +17,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final VideoPostRepository videoPostRepository = VideoPostRepositoryImplementation(
+        videoPostDataSource: LocalVideoPostDataSourceImplementation());
+
     return MultiProvider(
       providers: [
         //Por defecto el comportamiento natural de los ChangeNotifierProvider
@@ -22,7 +29,7 @@ class MyApp extends StatelessWidget {
         //Por lo tanto si lo necesitamos ya mismo, quitas la carga perezosa
         ChangeNotifierProvider(
           lazy: false,
-            create: (_) => DiscoverProvider()..loadVideos())
+            create: (_) => DiscoverProvider(videoPostRepository: videoPostRepository)..loadVideos())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
